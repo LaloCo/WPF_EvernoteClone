@@ -27,9 +27,20 @@ namespace EvernoteClone.View
             Application.Current.Shutdown();
         }
 
-        private void SpeechButton_Click(object sender, RoutedEventArgs e)
+        private void speechButton_Click(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void contentRichTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            int amountOfCharacters = (new TextRange(contentRichTextBox.Document.ContentStart, contentRichTextBox.Document.ContentEnd)).Text.Length;
+            statusTextBlock.Text = $"Document length: {amountOfCharacters} characters.";
+        }
+
+        private void boldButton_Click(object sender, RoutedEventArgs e)
+        {
+            contentRichTextBox.Selection.ApplyPropertyValue(Inline.FontWeightProperty, FontWeights.Bold);
         }
     }
 }
