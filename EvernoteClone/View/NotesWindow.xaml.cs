@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -31,8 +32,8 @@ namespace EvernoteClone.View
 
         private async void speechButton_Click(object sender, RoutedEventArgs e)
         {
-            string region = "southcentralus";
-            string key = "87464598e855488dbe3f5c85b71005f2";
+            string region = "westus";
+            string key = "4e1418a74a6a457e83faabc6451fe62d";
 
             var speechConfig = SpeechConfig.FromSubscription(key, region);
             using (var audioConfig = AudioConfig.FromDefaultMicrophoneInput())
@@ -53,7 +54,19 @@ namespace EvernoteClone.View
 
         private void boldButton_Click(object sender, RoutedEventArgs e)
         {
-            contentRichTextBox.Selection.ApplyPropertyValue(Inline.FontWeightProperty, FontWeights.Bold);
+            bool isButtonChecked = (sender as ToggleButton).IsChecked ?? false;
+
+            if (isButtonChecked)
+                contentRichTextBox.Selection.ApplyPropertyValue(Inline.FontWeightProperty, FontWeights.Bold);
+            else
+                contentRichTextBox.Selection.ApplyPropertyValue(Inline.FontWeightProperty, FontWeights.Normal);
+
+        }
+
+        private void contentRichTextBox_SelectionChanged(object sender, RoutedEventArgs e)
+        {
+            var selectedWeight = contentRichTextBox.Selection.GetPropertyValue(FontWeightProperty);
+            boldButton.IsChecked = (selectedWeight != DependencyProperty.UnsetValue) && (selectedWeight.Equals(FontWeights.Bold));
         }
     }
 }
