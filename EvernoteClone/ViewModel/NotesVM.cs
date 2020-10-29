@@ -26,6 +26,20 @@ namespace EvernoteClone.ViewModel
                 GetNotes();
             }
         }
+
+        private Note selectedNote;
+
+        public Note SelectedNote
+        {
+            get { return selectedNote; }
+            set
+            {
+                selectedNote = value;
+                OnPropertyChanged("SelectedNote");
+                SelectedNoteChanged?.Invoke(this, new EventArgs());
+            }
+        }
+
         private Visibility isVisible;
         public Visibility IsVisible
         {
@@ -43,6 +57,7 @@ namespace EvernoteClone.ViewModel
         public EndEditingCommand EndEditingCommand { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
+        public event EventHandler SelectedNoteChanged;
 
         public NotesVM()
         {
