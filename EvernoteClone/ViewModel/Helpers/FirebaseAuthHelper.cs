@@ -40,7 +40,7 @@ namespace EvernoteClone.ViewModel.Helpers
                 else
                 {
                     string errorJson = await response.Content.ReadAsStringAsync();
-                    var error = JsonConvert.DeserializeObject<Error>(errorJson);
+                    var error = JsonConvert.DeserializeObject<FirebaseError>(errorJson);
                     MessageBox.Show(error.error.message);
 
                     return false;
@@ -75,7 +75,7 @@ namespace EvernoteClone.ViewModel.Helpers
                 else
                 {
                     string errorJson = await response.Content.ReadAsStringAsync();
-                    var error = JsonConvert.DeserializeObject<Error>(errorJson);
+                    var error = JsonConvert.DeserializeObject<FirebaseError>(errorJson);
                     MessageBox.Show(error.error.message);
 
                     return false;
@@ -99,7 +99,7 @@ namespace EvernoteClone.ViewModel.Helpers
             public string message { get; set; }
         }
 
-        public class Error
+        public class FirebaseError
         {
             public ErrorDetails error { get; set; }
         }
