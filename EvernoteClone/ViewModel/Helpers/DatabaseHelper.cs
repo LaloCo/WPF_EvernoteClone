@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using EvernoteClone.Model;
+using Newtonsoft.Json;
 using SQLite;
 using System;
 using System.Collections.Generic;
@@ -76,7 +77,7 @@ namespace EvernoteClone.ViewModel.Helpers
             return result;
         }
 
-        public static async Task<List<T>> Read<T>() where T : new()
+        public static async Task<List<T>> Read<T>() where T : HasId
         {
             //List<T> items;
 
@@ -95,8 +96,16 @@ namespace EvernoteClone.ViewModel.Helpers
 
                 if (result.IsSuccessStatusCode)
                 {
-                    var objects = JsonConvert.DeserializeObject<List<T>>(jsonResult);
-                    return objects
+                    var objects = JsonConvert.DeserializeObject<Dictionary<string, T>>(jsonResult);
+
+                    List<T> list = new List<T>();
+                    foreach(var o in objects)
+                    {
+                        o.Value.Id = o.Key;
+                        list.Add(o.Value);
+                    }
+
+                    return list;
                 }
                 else
                 {
