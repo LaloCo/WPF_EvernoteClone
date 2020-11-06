@@ -76,17 +76,33 @@ namespace EvernoteClone.ViewModel.Helpers
             return result;
         }
 
-        public static List<T> Read<T>() where T : new()
+        public static async Task<List<T>> Read<T>() where T : new()
         {
-            List<T> items;
+            //List<T> items;
 
-            using (SQLiteConnection conn = new SQLiteConnection(dbFile))
+            //using (SQLiteConnection conn = new SQLiteConnection(dbFile))
+            //{
+            //    conn.CreateTable<T>();
+            //    items = conn.Table<T>().ToList();
+            //}
+
+            //return items;
+
+            using(var client = new HttpClient())
             {
-                conn.CreateTable<T>();
-                items = conn.Table<T>().ToList();
-            }
+                var result = await client.GetAsync($"{dbPath}{typeof(T).Name.ToLower()}.json");
+                var jsonResult = await result.Content.ReadAsStringAsync();
 
-            return items;
+                if (result.IsSuccessStatusCode)
+                {
+                    var objects = JsonConvert.DeserializeObject<List<T>>(jsonResult);
+                    return objects
+                }
+                else
+                {
+                    return null;
+                }
+            }
         }
     }
 }
