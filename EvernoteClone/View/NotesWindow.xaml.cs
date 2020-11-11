@@ -1,4 +1,5 @@
-﻿using EvernoteClone.ViewModel;
+﻿using Azure.Storage.Blobs;
+using EvernoteClone.ViewModel;
 using EvernoteClone.ViewModel.Helpers;
 using Microsoft.CognitiveServices.Speech;
 using Microsoft.CognitiveServices.Speech.Audio;
@@ -7,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -160,17 +162,33 @@ namespace EvernoteClone.View
         }
 
         // Save note (rtf)
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            string rtfFile = System.IO.Path.Combine(Environment.CurrentDirectory, $"{viewModel.SelectedNote.Id}.rtf");
-            viewModel.SelectedNote.FileLocation = rtfFile;
-            DatabaseHelper.Update(viewModel.SelectedNote);
+            string fileName = $"{viewModel.SelectedNote.Id}.rtf";
+            string rtfFile = System.IO.Path.Combine(Environment.CurrentDirectory, fileName);
 
             using (FileStream fileStream = new FileStream(rtfFile, FileMode.Create))
             {
                 var contents = new TextRange(contentRichTextBox.Document.ContentStart, contentRichTextBox.Document.ContentEnd);
                 contents.Save(fileStream, DataFormats.Rtf);
             }
+
+            viewModel.SelectedNote.FileLocation = await UpdateFile(rtfFile, fileName);
+            await DatabaseHelper.Update(viewModel.SelectedNote);
+        }
+
+        private async Task<string> UpdateFile(string rtfFilePath, string fileName)
+        {
+            string connectionString = "DefaultEndpointsProtocol=https;AccountName=evernotestoragelpa;AccountKey=Fzfxxeh0QrgMr+5y+pCOYg+4WKjn5jH1J+hGMyBQV5zChWCo6caPt083dTcWMsx75fQLa+ZEeem4lKai1eBZFA==;EndpointSuffix=core.windows.net";
+            string containerName = "notes";
+
+            var container = new BlobContainerClient(connectionString, containerName);
+            // container.CreateIfNotExistsAsync();
+
+            var blob = container.GetBlobClient(fileName);
+            await blob.UploadAsync(rtfFilePath);
+
+            return $"https://evernotestoragelpa.blob.core.windows.net/notes/{fileName}";
         }
     }
 }
