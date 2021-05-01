@@ -123,6 +123,8 @@ namespace EvernoteClone.ViewModel.Helpers
             using(var client = new HttpClient())
             {
                 var result = await client.GetAsync($"{dbPath}{typeof(T).Name.ToLower()}.json");
+                if (!result.IsSuccessStatusCode)
+                    return null;
                 var jsonResult = await result.Content.ReadAsStringAsync();
 
                 if (result.IsSuccessStatusCode)

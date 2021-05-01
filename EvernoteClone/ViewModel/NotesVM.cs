@@ -104,13 +104,16 @@ namespace EvernoteClone.ViewModel
 
         public async void GetNotebooks()
         {
-            var notebooks = (await DatabaseHelper.Read<Notebook>()).Where(n => n.UserId == App.UserId).ToList();
-
-            Notebooks.Clear();
-            foreach(var notebook in notebooks)
+            try
             {
-                Notebooks.Add(notebook);
+                var notebooks = (await DatabaseHelper.Read<Notebook>()).Where(n => n.UserId == App.UserId).ToList();
+                Notebooks.Clear();
+                foreach (var notebook in notebooks)
+                {
+                    Notebooks.Add(notebook);
+                }
             }
+            catch (ArgumentNullException) { }
         }
 
         private async void GetNotes()
